@@ -26,7 +26,7 @@ export function generateAPI() {
     const program = TWProjectUtilities.programWithPath(cwd);
     const tsFiles = program.getSourceFiles().filter(file => !file.fileName.endsWith('.d.ts'));
     for (const file of tsFiles) {
-        ts.transform(file, [TWThingTransformerFactory(program, cwd, false, false, twConfig)], program.getCompilerOptions());
+        ts.transform(file, [TWThingTransformerFactory(program.getProgram(), cwd, false, false, twConfig)], program.getCompilerOptions());
     }
 
     // Accumulate the declarations into a single file

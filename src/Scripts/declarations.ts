@@ -44,7 +44,7 @@ export function declarations() {
         const program = TWProjectUtilities.programWithPath(path);
         const tsFiles = program.getSourceFiles().filter(file => !file.fileName.endsWith('.d.ts'));
         for (const file of tsFiles) {
-            ts.transform(file, [TWThingTransformerFactory(program, path, false, true, twConfig)], program.getCompilerOptions());
+            ts.transform(file, [TWThingTransformerFactory(program.getProgram(), path, false, true, twConfig)], program.getCompilerOptions());
         }
 
         // Accumulate the declarations into a single file

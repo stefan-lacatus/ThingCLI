@@ -72,7 +72,7 @@ export class TWProjectUtilities {
      * @param strict    When set to `true`, the `noEmitOnError` flag will be enabled.
      * @returns         A typescript program.
      */
-    static programWithPath(path: string, strict = false): ts.Program {
+    static programWithPath(path: string, strict = false): ts.SemanticDiagnosticsBuilderProgram {
         // Load the typescript configuration file
         const tsConfigFile = ts.findConfigFile(path, ts.sys.fileExists, 'tsconfig.json');
         if (!tsConfigFile) {
@@ -85,10 +85,13 @@ export class TWProjectUtilities {
             config.options.noEmitOnError = true;
         }
 
-        const host = ts.createCompilerHost(config.options, true);
-
         // Create the typescript project
-        return ts.createProgram({options: config.options, rootNames: config.fileNames, configFileParsingDiagnostics: config.errors, host});
+        return ts.createIncrementalProgram({
+            options: config.options, 
+            rootNames: config.fileNames, 
+            configFileParsingDiagnostics: config.errors,
+            createProgram: ts.createSemanticDiagnosticsBuilderProgram,
+        });
     }
 
     /**
