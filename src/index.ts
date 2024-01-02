@@ -28,12 +28,12 @@ async function main() {
             break;
         case Commands.watch:
             let declarationsRunning = false;
-            fs.watch(`${process.cwd()}/src`, {recursive: true}, async (event: fs.WatchEventType, filename: string) => {
+            fs.watch(`${process.cwd()}/src`, {recursive: true, encoding: 'utf8'}, async (event: fs.WatchEventType, filename: string | null) => {
                 if (declarationsRunning) return;
 
                 // Don't process this if it's a change to the static directory, which is generated
                 // by the declarations command
-                if (filename.match(/(.*)[\/\\]?static[\/\\]gen[\/\\]Generated\.d\.ts$/)) return;
+                if (filename?.match(/(.*)[\/\\]?static[\/\\]gen[\/\\]Generated\.d\.ts$/)) return;
 
                 // In certain cases the callback is invoked twice, so wait for a short while before running to avoid this
                 declarationsRunning = true;
