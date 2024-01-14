@@ -215,15 +215,21 @@ export async function build(push: boolean = false): Promise<DeploymentEndpoint[]
 
             const diagnosticMessages = twConfig.store['@diagnosticMessages'] as unknown as DiagnosticMessage[] || [];
 
+            const hasErrorMessages = diagnosticMessages.some(m => m.kind == DiagnosticMessageKind.Error);
+
             // If any errors were reported, display them and fail
-            if (diagnosticMessages.some(m => m.kind == DiagnosticMessageKind.Error)) {
-                process.stdout.write(`\r\x1b[1;31m✖\x1b[0m Failed building ${project.name || 'project'}\n`);
+            if (diagnosticMessages.length > 0) {
+                if (hasErrorMessages) {
+                    process.stdout.write(`\r\x1b[1;31m✖\x1b[0m Failed building ${project.name || 'project'}\n`);
+                }
 
                 for (const message of diagnosticMessages) {
                     PrintDiagnosticMessage(message);
                 }
 
-                throw new Error('Validation failed.');
+                if (hasErrorMessages) {
+                    throw new Error('Validation failed.');
+                }
             }
 
             // Store an array of all transformers created, to be used to extract
